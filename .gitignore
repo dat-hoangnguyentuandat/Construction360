@@ -1,7 +1,8 @@
 .vs/
 bin/
 obj/
-claude_code_project/
+.claude/
+claude_code_project
 
 *.user
 *.suo
