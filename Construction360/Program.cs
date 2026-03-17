@@ -118,6 +118,12 @@ builder.Services.AddHostedService<OpenIddictSeeder>();
 // Login ticket relay service
 builder.Services.AddSingleton<LoginTicketService>();
 
+// ForgotPassword OTP service
+builder.Services.AddSingleton<ForgotPasswordOtpService>();
+
+// Email sender — DevEmailSender cho development, thay bằng SmtpEmailSender khi production
+builder.Services.AddTransient<IEmailSender, DevEmailSender>();
+
 
 // Blazor services
 builder.Services.AddRazorPages();
