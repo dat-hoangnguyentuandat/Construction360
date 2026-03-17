@@ -5,7 +5,7 @@ namespace Construction360.Models;
 public class ApplicationUser : IdentityUser
 {
     public string? FullName { get; set; }
-    public DateTime? DateOfBirth { get; set; }
+    public DateOnly? DateOfBirth { get; set; }
     public string? Company { get; set; }
     public string? Position { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

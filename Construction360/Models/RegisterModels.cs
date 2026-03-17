@@ -16,7 +16,7 @@ public class RegisterInfoModel
 
     public string? FullName { get; set; }
 
-    public DateTime? DateOfBirth { get; set; }
+    public DateOnly? DateOfBirth { get; set; }
 
     public string? Company { get; set; }
 
