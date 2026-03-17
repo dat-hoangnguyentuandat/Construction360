@@ -106,6 +106,33 @@
     margin-bottom: 28px;
 }
 
+/* ----- Description text (forgot password instruction) ----- */
+.auth-description {
+    font-size: 0.88rem;
+    color: #6b7280;
+    margin-bottom: 20px;
+    line-height: 1.55;
+}
+
+/* ----- Inline link button (Gửi lại mã) ----- */
+.btn-link-inline {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #4f46e5;
+    font-size: 0.87rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+}
+.btn-link-inline:hover:not(:disabled) {
+    text-decoration: underline;
+}
+.btn-link-inline:disabled {
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
 /* ----- Form field ----- */
 .auth-field {
     margin-bottom: 16px;
