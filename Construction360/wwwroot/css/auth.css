@@ -363,3 +363,94 @@
 @keyframes btn-spin {
     to { transform: rotate(360deg); }
 }
+
+/* ----- Alert banner (sai credentials / lockout) ----- */
+.auth-alert-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: #fff5f5;
+    border: 1.5px solid #fc8181;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 18px;
+    font-size: 0.87rem;
+    color: #c53030;
+}
+.auth-alert-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+.auth-alert-text {
+    flex: 1;
+    line-height: 1.5;
+}
+.auth-alert-close {
+    background: none;
+    border: none;
+    font-size: 1.15rem;
+    color: #fc8181;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    flex-shrink: 0;
+}
+.auth-alert-close:hover {
+    color: #c53030;
+}
+
+/* ----- Remember me row ----- */
+.auth-remember-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+}
+.auth-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.87rem;
+    color: #374151;
+    cursor: pointer;
+    user-select: none;
+}
+.auth-checkbox {
+    width: 16px;
+    height: 16px;
+    accent-color: #4f46e5;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.auth-forgot-link {
+    font-size: 0.87rem;
+    color: #4f46e5;
+    font-weight: 600;
+    text-decoration: none;
+}
+.auth-forgot-link:hover {
+    text-decoration: underline;
+}
+
+/* ----- Login footer (2 columns: Đăng ký + Liên hệ hỗ trợ) ----- */
+.auth-login-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 18px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.auth-support-link {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.87rem;
+    color: #4f46e5;
+    font-weight: 600;
+    text-decoration: none;
+}
+.auth-support-link:hover {
+    text-decoration: underline;
+}
+
