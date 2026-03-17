@@ -2,6 +2,26 @@
    AUTH PAGES — Register / Login / ForgotPassword
    ===================================================== */
 
+/* ----- Blazor validation class overrides (for auth-input) ----- */
+/* Blazor adds .invalid on InputText when field is invalid after submit */
+.auth-input.invalid,
+.auth-input.modified.invalid {
+    border-color: #e53e3e !important;
+    box-shadow: none !important;
+}
+.auth-input.valid,
+.auth-input.modified.valid {
+    border-color: #d1d5db;   /* keep neutral — don't show green on valid */
+    box-shadow: none;
+    outline: none;
+}
+/* Blazor ValidationMessage renders as <div class="validation-message"> */
+.validation-message {
+    font-size: 0.78rem;
+    color: #e53e3e;
+    margin-top: 4px;
+}
+
 /* ----- Background ----- */
 .auth-page {
     min-height: 100vh;
