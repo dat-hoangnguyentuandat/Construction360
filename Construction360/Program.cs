@@ -1,5 +1,6 @@
 using Construction360.Data;
 using Construction360.Models;
+using Construction360.Services;
 using Construction360.Workers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -113,6 +114,9 @@ builder.Services
 
 // OpenIddict seeder (IHostedService)
 builder.Services.AddHostedService<OpenIddictSeeder>();
+
+// Login ticket relay service
+builder.Services.AddSingleton<LoginTicketService>();
 
 
 // Blazor services
