@@ -128,6 +128,8 @@ builder.Services.AddTransient<IEmailSender, DevEmailSender>();
 // Blazor services
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+// MVC Controllers — cần cho AuthorizationController (OpenIddict passthrough)
+builder.Services.AddControllers();
 
 
 var app = builder.Build();
@@ -148,6 +150,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // Endpoints
+app.MapControllers();
 app.MapRazorPages();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
