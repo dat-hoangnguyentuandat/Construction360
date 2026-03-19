@@ -1,0 +1,334 @@
+@page "/account/register"
+@layout AuthLayout
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject NavigationManager Navigation
+
+<div class="auth-logo">
+    <img src="favicon.png" alt="BIM 360 logo" />
+    <span class="auth-logo-text">BIM XÂY DỰNG 360</span>
+</div>
+
+@if (_step == 1)
+{
+    <div class="auth-card">
+        <h1 class="auth-card-title">ĐĂNG KÝ</h1>
+
+        <EditForm EditContext="_editContext1" OnValidSubmit="GoToStep2">
+            <DataAnnotationsValidator />
+
+            <div class="auth-row-2col">
+                <div class="auth-field">
+                    <label>Email <span class="required-star">*</span></label>
+                    <InputText @bind-Value="_info.Email"
+                               class="auth-input"
+                               placeholder="Nhập email" />
+                    <ValidationMessage For="@(() => _info.Email)" />
+                </div>
+                <div class="auth-field">
+                    <label>Số điện thoại <span class="required-star">*</span></label>
+                    <InputText @bind-Value="_info.PhoneNumber"
+                               class="auth-input"
+                               placeholder="Nhập số điện thoại" />
+                    <ValidationMessage For="@(() => _info.PhoneNumber)" />
+                </div>
+            </div>
+
+            <div class="auth-field">
+                <label>Họ và Tên</label>
+                <InputText @bind-Value="_info.FullName"
+                           class="auth-input"
+                           placeholder="Nhập họ và tên" />
+            </div>
+
+            <div class="auth-field">
+                <label>Ngày sinh</label>
+                <InputDate @bind-Value="_info.DateOfBirth"
+                           class="auth-input"
+                           placeholder="--/--/----" />
+            </div>
+
+            <div class="auth-field">
+                <label>Công ty</label>
+                <InputText @bind-Value="_info.Company"
+                           class="auth-input"
+                           placeholder="Nhập tên công ty" />
+            </div>
+
+            <div class="auth-field">
+                <label>Chức vụ</label>
+                <InputText @bind-Value="_info.Position"
+                           class="auth-input"
+                           placeholder="Nhập chức vụ" />
+            </div>
+
+            <div style="margin-top: 24px;">
+                <button type="submit" class="btn-auth-primary">Tiếp tục</button>
+            </div>
+        </EditForm>
+
+        <div class="auth-footer-link">
+            Bạn đã có tài khoản? <a href="/account/login">Đăng nhập</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="auth-card">
+        <h1 class="auth-card-title">TẠO MẬT KHẨU</h1>
+
+        @if (_serverErrors.Count > 0)
+        {
+            <div class="auth-server-errors">
+                <ul>
+                    @foreach (var err in _serverErrors)
+                    {
+                        <li>@err</li>
+                    }
+                </ul>
+            </div>
+        }
+
+        <EditForm EditContext="_editContext2" OnValidSubmit="HandleRegister">
+            <DataAnnotationsValidator />
+
+            <div class="auth-field">
+                <label>Mật khẩu <span class="required-star">*</span></label>
+                <div class="auth-input-password-wrapper">
+                    <input type="@(_showPwd1 ? "text" : "password")"
+                           value="@_pwd.Password"
+                           @oninput="OnPasswordInput"
+                           @onblur="OnPasswordBlur"
+                           class="auth-input @GetFieldCss(nameof(_pwd.Password))"
+                           placeholder="Nhập mật khẩu" />
+                    <button type="button" class="toggle-password"
+                            @onclick="() => _showPwd1 = !_showPwd1"
+                            tabindex="-1">
+                        @if (_showPwd1)
+                        {
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        }
+                        else
+                        {
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8
+                                         a18.45 18.45 0 0 1 5.06-5.94"/>
+                                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8
+                                         a18.5 18.5 0 0 1-2.16 3.19"/>
+                                <line x1="1" y1="1" x2="23" y2="23"/>
+                            </svg>
+                        }
+                    </button>
+                </div>
+                <ValidationMessage For="@(() => _pwd.Password)" />
+                <div class="auth-hint-msg">
+                    Sử dụng tối thiểu 8 ký tự, bao gồm chữ cái, chữ số và ký tự đặc biệt
+                </div>
+            </div>
+
+            <div class="auth-field">
+                <label>Nhập lại mật khẩu <span class="required-star">*</span></label>
+                <div class="auth-input-password-wrapper">
+                    <input type="@(_showPwd2 ? "text" : "password")"
+                           value="@_pwd.ConfirmPassword"
+                           @oninput="OnConfirmPasswordInput"
+                           @onblur="OnConfirmPasswordBlur"
+                           class="auth-input @GetFieldCss(nameof(_pwd.ConfirmPassword))"
+                           placeholder="Nhập lại mật khẩu" />
+                    <button type="button" class="toggle-password"
+                            @onclick="() => _showPwd2 = !_showPwd2"
+                            tabindex="-1">
+                        @if (_showPwd2)
+                        {
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        }
+                        else
+                        {
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8
+                                         a18.45 18.45 0 0 1 5.06-5.94"/>
+                                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8
+                                         a18.5 18.5 0 0 1-2.16 3.19"/>
+                                <line x1="1" y1="1" x2="23" y2="23"/>
+                            </svg>
+                        }
+                    </button>
+                </div>
+                <ValidationMessage For="@(() => _pwd.ConfirmPassword)" />
+            </div>
+
+            <div class="auth-btn-row">
+                <button type="button" class="btn-auth-outline"
+                        @onclick="BackToStep1" disabled="@_isSubmitting">
+                    Quay lại
+                </button>
+                <button type="submit" class="btn-auth-primary" disabled="@_isSubmitting">
+                    @if (_isSubmitting)
+                    {
+                        <span class="btn-spinner"></span>
+                    }
+                    Đăng ký
+                </button>
+            </div>
+        </EditForm>
+    </div>
+}
+
+@if (_showSuccessModal)
+{
+    <div class="auth-modal-overlay">
+        <div class="auth-modal">
+            <div class="auth-modal-header">
+                <div class="auth-modal-title">
+                    <span class="success-icon">✓</span>
+                    Tạo tài khoản thành công
+                </div>
+                <button type="button" class="auth-modal-close"
+                        @onclick="OnSuccessOk">×</button>
+            </div>
+            <div class="auth-modal-footer">
+                <button type="button" class="btn-modal-ok"
+                        @onclick="OnSuccessOk">OK</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private int _step = 1;
+    private bool _showPwd1;
+    private bool _showPwd2;
+    private bool _isSubmitting;
+    private bool _showSuccessModal;
+    private List<string> _serverErrors = new();
+
+    private RegisterInfoDto _info = new();
+    private RegisterPasswordDto _pwd = new();
+
+    private EditContext _editContext1 = default!;
+    private EditContext _editContext2 = default!;
+
+    protected override void OnInitialized()
+    {
+        _editContext1 = new EditContext(_info);
+        _editContext2 = new EditContext(_pwd);
+    }
+
+    private void GoToStep2()
+    {
+        _pwd = new RegisterPasswordDto();
+        _editContext2 = new EditContext(_pwd);
+        _serverErrors.Clear();
+        _step = 2;
+    }
+
+    private void BackToStep1()
+    {
+        _step = 1;
+        _serverErrors.Clear();
+    }
+
+    private void OnPasswordInput(ChangeEventArgs e)
+    {
+        _pwd.Password = e.Value?.ToString() ?? string.Empty;
+        _editContext2.NotifyFieldChanged(
+            _editContext2.Field(nameof(RegisterPasswordDto.Password)));
+    }
+    private void OnPasswordBlur()
+    {
+        _editContext2.NotifyFieldChanged(
+            _editContext2.Field(nameof(RegisterPasswordDto.Password)));
+    }
+
+    private void OnConfirmPasswordInput(ChangeEventArgs e)
+    {
+        _pwd.ConfirmPassword = e.Value?.ToString() ?? string.Empty;
+        _editContext2.NotifyFieldChanged(
+            _editContext2.Field(nameof(RegisterPasswordDto.ConfirmPassword)));
+    }
+    private void OnConfirmPasswordBlur()
+    {
+        _editContext2.NotifyFieldChanged(
+            _editContext2.Field(nameof(RegisterPasswordDto.ConfirmPassword)));
+    }
+
+    private string GetFieldCss(string fieldName)
+    {
+        var fi = _editContext2.Field(fieldName);
+        if (!_editContext2.IsModified(fi)) return string.Empty;
+        return _editContext2.GetValidationMessages(fi).Any() ? "invalid" : string.Empty;
+    }
+
+    private async Task HandleRegister()
+    {
+        _isSubmitting = true;
+        _serverErrors.Clear();
+        StateHasChanged();
+
+        try
+        {
+            var user = new ApplicationUser
+            {
+                UserName       = _info.Email,
+                Email          = _info.Email,
+                PhoneNumber    = _info.PhoneNumber,
+                FullName       = _info.FullName,
+                DateOfBirth    = _info.DateOfBirth,
+                Company        = _info.Company,
+                Position       = _info.Position,
+                EmailConfirmed = false,
+            };
+
+            var result = await UserManager.CreateAsync(user, _pwd.Password);
+
+            if (result.Succeeded)
+            {
+                _showSuccessModal = true;
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    _serverErrors.Add(TranslateIdentityError(error));
+                }
+            }
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+
+    private void OnSuccessOk()
+    {
+        _showSuccessModal = false;
+        Navigation.NavigateTo("/account/login");
+    }
+
+    private static string TranslateIdentityError(IdentityError error) => error.Code switch
+    {
+        "DuplicateEmail"                  => "Email này đã được sử dụng.",
+        "DuplicateUserName"               => "Email này đã được sử dụng.",
+        "InvalidEmail"                    => "Email không hợp lệ.",
+        "PasswordTooShort"                => "Mật khẩu phải có ít nhất 8 ký tự.",
+        "PasswordRequiresDigit"           => "Mật khẩu phải chứa ít nhất 1 chữ số.",
+        "PasswordRequiresLower"           => "Mật khẩu phải chứa ít nhất 1 chữ thường.",
+        "PasswordRequiresUpper"           => "Mật khẩu phải chứa ít nhất 1 chữ hoa.",
+        "PasswordRequiresNonAlphanumeric" => "Mật khẩu phải chứa ít nhất 1 ký tự đặc biệt.",
+        _                                 => error.Description,
+    };
+}
