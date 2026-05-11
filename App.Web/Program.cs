@@ -1,45 +1,74 @@
-using App.Infrastructure.Extensions;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ── Infrastructure (DbContext, Identity, OpenIddict, Services) ──
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
 
-// ── Cookie configuration ────────────────────────────────────────
-builder.Services.ConfigureApplicationCookie(options =>
+builder.Services.AddAuthentication(options =>
 {
-    options.LoginPath         = "/account/login";
-    options.LogoutPath        = "/account/logout";
-    options.AccessDeniedPath  = "/account/access-denied";
-    options.SlidingExpiration = true;
-    options.ExpireTimeSpan    = TimeSpan.FromHours(8);
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+})
+
+.AddCookie()
+
+.AddOpenIdConnect(options =>
+{
+    options.Authority = "https://localhost:7108";
+    options.ClientId = "app-web";
+    options.ClientSecret = "app-web-secret";
+    options.ResponseType = "code";
+    options.SaveTokens = true;
+
+    options.Scope.Add("email");
+    options.Scope.Add("profile");
+    options.Scope.Add("offline_access");
+    options.Scope.Add("roles");
+
+    options.CallbackPath = "/signin-oidc";
 });
 
-// ── UI & Web ────────────────────────────────────────────────────
-builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
-// MVC Controllers — cần cho AuthorizationController (OpenIddict passthrough)
-builder.Services.AddControllers();
+builder.Services.AddCascadingAuthenticationState();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<App.Web.Services.ApiClient>();
+
+builder.Services.AddHttpClient("api", client =>
+    client.BaseAddress = new Uri("https://localhost:7108"));
 
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
-app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseAntiforgery();
 
-app.MapControllers();
-app.MapRazorPages();
-app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
+app.MapGet("api/auth/login", () =>
+    Results.Challenge(
+        properties: new AuthenticationProperties { RedirectUri = "/" },
+        authenticationSchemes: [OpenIdConnectDefaults.AuthenticationScheme]
+    ));
+
+app.MapGet("api/auth/logout", () =>
+    Results.SignOut(
+        properties: new AuthenticationProperties { RedirectUri = "/" },
+        authenticationSchemes: [
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            OpenIdConnectDefaults.AuthenticationScheme
+        ]
+    ));
+
+app.MapRazorComponents<App.Web.Components.App>()
+    .AddInteractiveServerRenderMode();
 
 app.Run();

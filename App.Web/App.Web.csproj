@@ -7,17 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\App.Domain\App.Domain.csproj" />
-    <ProjectReference Include="..\App.Application\App.Application.csproj" />
-    <ProjectReference Include="..\App.Infrastructure\App.Infrastructure.csproj" />
-    <ProjectReference Include="..\App.Shared\App.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.*">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.0" />
   </ItemGroup>
 
 </Project>
